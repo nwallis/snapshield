@@ -52,8 +52,6 @@ Product.prototype.move = function(verticalMoveAmount, horizontalMoveAmount) {
         this.currentLevel = Math.min(Math.max(this.currentLevel + verticalSteps, 1), this.sequenceData.levels);
     }
 
-    //Render hotspots
-    this.displayCurrentHotspots();
 }
 
 Product.prototype.displayCurrentHotspots = function() {
@@ -67,7 +65,8 @@ Product.prototype.displayCurrentHotspots = function() {
     if (hotspots) {
         hotspots.forEach(function(individualHotspot) {
             var hotspotData = self.sequenceData.hotspotDictionary[individualHotspot.hotspotName];
-            var hotspotVisual = new Hotspot(hotspotData);
+            console.log(individualHotspot);
+            var hotspotVisual = new Hotspot(individualHotspot.x, individualHotspot.y, hotspotData);
             $("#hotspot-container").append(hotspotVisual.toHTML());
         });
     }
@@ -126,5 +125,3 @@ Product.errorLookup = function(errorCode) {
  *  Above the product should sit another class which is responsible for managing the touch and mouse events
  *
  */
-
-

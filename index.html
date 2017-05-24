@@ -61,6 +61,46 @@ var validSequenceJSON = {
         });
 
         $(window).resize(function(){
+            resizeImages();
+            update();
+        });
+
+        $(window).mousemove(function(e){
+            if (trackingMovement){
+
+                if (trackStart == undefined) trackStart = recordMousePosition(e);
+                var currentPosition = recordMousePosition(e);
+                var xDiff = currentPosition.xPos - trackStart.xPos;   
+                var yDiff = currentPosition.yPos - trackStart.yPos;   
+
+                $("#" + currentImage).hide();
+                productSequence.move(yDiff, xDiff);
+                currentImage = productSequence.getCurrentImage();
+                $("#" + currentImage).show();
+                trackStart = recordMousePosition(e);
+
+                //Display the hotspots 
+                productSequence.displayCurrentHotspots();
+            }
+        });
+
+        $("#client-container").mousedown(function(){
+            trackingMovement = true; 
+        });
+
+        function update(){
+            productSequence.displayCurrentHotspots();
+        }
+
+        function recordMousePosition(e){
+            return {
+                xPos:e.clientX,
+                yPos:e.clientY
+            };
+        }
+
+        function resizeImages(){
+            //Determine the correct CSS attribute to maintain aspect ratio
             var sequenceContainerWidth = $("#sequence-container").width();
             var sequenceContainerHeight = $("#sequence-container").height();
             if (sequenceContainerWidth > sequenceContainerHeight){
@@ -71,41 +111,17 @@ var validSequenceJSON = {
                 $(".sequence-image").css("height", "auto");
             }
 
+            //Resize hotspot container
             var visibleImageOffset = $(".sequence-image:visible").offset();
             $("#hotspot-container").width($(".sequence-image:visible").width());
             $("#hotspot-container").height($(".sequence-image:visible").height());
             $("#hotspot-container").css("top", visibleImageOffset.top);
             $("#hotspot-container").css("left", visibleImageOffset.left);
 
-        });
-
-        $(window).mousemove(function(e){
-            if (trackingMovement){
-
-                if (trackStart == undefined) trackStart = recordMousePosition(e);
-                var currentPosition = recordMousePosition(e);
-
-                var xDiff = currentPosition.xPos - trackStart.xPos;   
-                var yDiff = currentPosition.yPos - trackStart.yPos;   
-
-                $("#" + currentImage).hide();
-                productSequence.move(yDiff, xDiff);
-                currentImage = productSequence.getCurrentImage();
-                $("#" + currentImage).show();
-                trackStart = recordMousePosition(e);
-            }
-        });
-
-        $("#client-container").mousedown(function(){
-            trackingMovement = true; 
-        });
-
-        function recordMousePosition(e){
-            return {
-                xPos:e.clientX,
-                yPos:e.clientY
-            };
         }
+        
+        resizeImages();
+        update();
 
     });
 
