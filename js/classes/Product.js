@@ -65,7 +65,6 @@ Product.prototype.displayCurrentHotspots = function() {
     if (hotspots) {
         hotspots.forEach(function(individualHotspot) {
             var hotspotData = self.sequenceData.hotspotDictionary[individualHotspot.hotspotName];
-            console.log(individualHotspot);
             var hotspotVisual = new Hotspot(individualHotspot.x, individualHotspot.y, hotspotData);
             $("#hotspot-container").append(hotspotVisual.toHTML());
         });
