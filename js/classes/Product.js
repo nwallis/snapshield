@@ -36,7 +36,6 @@ Product.prototype.setHorizontalThreshold = function(value) {
 }
 
 Product.prototype.move = function(verticalMoveAmount, horizontalMoveAmount) {
-
     var horizontalSteps = (Product.numberCeiling(horizontalMoveAmount / this.horizontalThreshold));
     var verticalSteps = (Product.numberCeiling(verticalMoveAmount / this.verticalThreshold));
 
