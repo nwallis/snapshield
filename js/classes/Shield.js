@@ -95,8 +95,8 @@ Shield.prototype.mouseMoved = function(e) {
 
 Shield.prototype.recordMousePosition = function(e) {
     return {
-        xPos: (e.originalEvent.touches[0]) ? e.originalEvent.touches[0].clientX : e.clientX,
-        yPos: (e.originalEvent.touches[0]) ? e.originalEvent.touches[0].clientY : e.clientY
+        xPos: (e.originalEvent.touches != undefined) ? e.originalEvent.touches[0].clientX : e.clientX,
+        yPos: (e.originalEvent.touches != undefined) ? e.originalEvent.touches[0].clientY : e.clientY
     };
 }
 
