@@ -10,6 +10,7 @@ var Shield = function(parentContainerId, sequenceData) {
     };
 
     $("#" + parentContainerId).append("<div id='sequence-container'></div>");
+    $(SEQUENCE_CONTAINER_ID).append('<div id="hotspot-container" class="noselect"></div> <div id="menu-container"> </div>');
 
     this._productSequence = new Product(sequenceData);
 
@@ -40,7 +41,7 @@ Shield.prototype.init = function() {
 
     for (var levelCount = 1; levelCount <= this.numberOfVerticalImages; levelCount++) {
         for (var imageCount = 1; imageCount <= this.numberOfHorizontalImages; imageCount++) {
-            $(SEQUENCE_CONTAINER_ID).prepend('<img id="' + this.imagePrefix + '-' + levelCount + '-' + imageCount + '" class="sequence-image" src="' + IMAGE_LOCATION + this.imagePrefix + '-' + levelCount + '-' + imageCount + IMAGE_EXTENSION + '">');
+            $(SEQUENCE_CONTAINER_ID).prepend('<img id="' + this.imagePrefix + '-' + levelCount + '-' + imageCount + '" class="sequence-image noselect" src="' + IMAGE_LOCATION + this.imagePrefix + '-' + levelCount + '-' + imageCount + IMAGE_EXTENSION + '">');
         }
     }
 
@@ -77,6 +78,7 @@ Shield.prototype.stopTracking = function(e) {
 Shield.prototype.mouseMoved = function(e) {
 
     if (this._trackingMovement) {
+        e.preventDefault();
         if (this._trackStart == undefined) this._trackStart = this.recordMousePosition(e);
         var currentPosition = this.recordMousePosition(e);
         var xDiff = currentPosition.xPos - this._trackStart.xPos;
@@ -93,8 +95,8 @@ Shield.prototype.mouseMoved = function(e) {
 
 Shield.prototype.recordMousePosition = function(e) {
     return {
-        xPos: e.originalEvent.touches[0].clientX || e.clientX,
-        yPos: e.originalEvent.touches[0].clientY || e.clientY
+        xPos: (e.originalEvent.touches[0]) ? e.originalEvent.touches[0].clientX : e.clientX,
+        yPos: (e.originalEvent.touches[0]) ? e.originalEvent.touches[0].clientY : e.clientY
     };
 }
 
