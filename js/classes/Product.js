@@ -51,25 +51,6 @@ Product.prototype.move = function(verticalMoveAmount, horizontalMoveAmount) {
     } else {
         this.currentLevel = Math.min(Math.max(this.currentLevel + verticalSteps, 1), this.sequenceData.levels);
     }
-
-}
-
-Product.prototype.displayCurrentHotspots = function() {
-
-    //Clear old hotspots
-    $("#hotspot-container").empty();
-
-    var hotspots = this.getCurrentHotspots();
-    var self = this;
-
-    if (hotspots) {
-        hotspots.forEach(function(individualHotspot) {
-            var hotspotData = self.sequenceData.hotspotDictionary[individualHotspot.hotspotName];
-            var hotspotVisual = new Hotspot(individualHotspot.x, individualHotspot.y, hotspotData);
-            $("#hotspot-container").append(hotspotVisual.toHTML());
-        });
-    }
-
 }
 
 Product.numberCeiling = function(value) {
@@ -94,7 +75,6 @@ Product.prototype.adjustFactors = function(verticalAdjust, horizontalAdjust) {
     this.verticalFactor += verticalAdjust;
     this.horizontalFactor = Math.abs(this.horizontalFactor) % 1;
     this.verticalFactor = Math.abs(this.verticalFactor) % 1;
-
 }
 
 Product.prototype.getCurrentImage = function() {
@@ -102,7 +82,16 @@ Product.prototype.getCurrentImage = function() {
 }
 
 Product.prototype.getCurrentHotspots = function() {
-    return this.sequenceData.hotspotLocations[this.getCurrentImage()];
+    var hotspots = this.sequenceData.hotspotLocations[this.getCurrentImage()];
+    var self = this;
+    if (hotspots){
+        hotspots.forEach(function(hotspot){
+            hotspot.hotspotData = self.sequenceData.hotspotDictionary[hotspot.hotspotName];
+        });
+        return hotspots;
+    }else{
+        return [];
+    }
 }
 
 Product.round = function(value, decimals) {
