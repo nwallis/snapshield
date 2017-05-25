@@ -8,12 +8,16 @@ var Product = function(sequenceData) {
         throw new Error(Product.errorLookup("SNP0001"));
     }
 
-    //Don't store this, create instance variables
-    this.sequenceData = sequenceData;
+    this.currentImage = sequenceData.startingImage;
+    this.currentLevel = sequenceData.startingLevel;
+    this.horizontalLoop = sequenceData.horizontalLoop;
+    this.verticalLoop = sequenceData.verticalLoop;
+    this.numberOfHorizontalImages = sequenceData.images;
+    this.numberOfVerticalImages = sequenceData.levels;
+    this.imagePrefix = sequenceData.prefix;
+    this.hotspotLocations = sequenceData.hotspotLocations;
+    this.hotspotDictionary = sequenceData.hotspotDictionary;
 
-    this.levels = [];
-    this.currentImage = this.sequenceData.startingImage;
-    this.currentLevel = this.sequenceData.startingLevel;
     this.setThreshold(100);
 }
 
@@ -36,20 +40,20 @@ Product.prototype.move = function(verticalMoveAmount, horizontalMoveAmount) {
     var horizontalSteps = (Product.numberCeiling(horizontalMoveAmount / this.horizontalThreshold));
     var verticalSteps = (Product.numberCeiling(verticalMoveAmount / this.verticalThreshold));
 
-    if (this.sequenceData.horizontalLoop) {
-        horizontalSteps %= this.sequenceData.images;
-        this.currentImage = ((this.currentImage + this.sequenceData.images) + horizontalSteps) % this.sequenceData.images;
-        if (this.currentImage == 0) this.currentImage = this.sequenceData.images;
+    if (this.horizontalLoop) {
+        horizontalSteps %= this.numberOfHorizontalImages;
+        this.currentImage = ((this.currentImage + this.numberOfHorizontalImages) + horizontalSteps) % this.numberOfHorizontalImages;
+        if (this.currentImage == 0) this.currentImage = this.numberOfHorizontalImages;
     } else {
-        this.currentImage = Math.min(Math.max(this.currentImage + horizontalSteps, 1), this.sequenceData.images);
+        this.currentImage = Math.min(Math.max(this.currentImage + horizontalSteps, 1), this.numberOfHorizontalImages);
     }
 
-    if (this.sequenceData.verticalLoop) {
-        verticalSteps %= this.sequenceData.levels;
-        this.currentLevel = ((this.currentLevel + this.sequenceData.levels) + verticalSteps) % this.sequenceData.levels;
-        if (this.currentLevel == 0) this.currentLevel = this.sequenceData.levels;
+    if (this.verticalLoop) {
+        verticalSteps %= this.numberOfVerticalImages;
+        this.currentLevel = ((this.currentLevel + this.numberOfVerticalImages) + verticalSteps) % this.numberOfVerticalImages;
+        if (this.currentLevel == 0) this.currentLevel = this.numberOfVerticalImages;
     } else {
-        this.currentLevel = Math.min(Math.max(this.currentLevel + verticalSteps, 1), this.sequenceData.levels);
+        this.currentLevel = Math.min(Math.max(this.currentLevel + verticalSteps, 1), this.numberOfVerticalImages);
     }
 }
 
@@ -66,9 +70,9 @@ Product.prototype.adjustFactors = function(verticalAdjust, horizontalAdjust) {
 
     horizontalAdjust = Product.round(horizontalAdjust, 1);
 
-    if (this.sequenceData.horizontalLoop)
+    if (this.horizontalLoop)
         if (horizontalAdjust < 0) horizontalAdjust = 1 + horizontalAdjust;
-    if (this.sequenceData.verticalLoop)
+    if (this.verticalLoop)
         if (verticalAdjust < 0) verticalAdjust = 1 + verticalAdjust;
 
     this.horizontalFactor += horizontalAdjust;
@@ -78,15 +82,15 @@ Product.prototype.adjustFactors = function(verticalAdjust, horizontalAdjust) {
 }
 
 Product.prototype.getCurrentImage = function() {
-    return this.sequenceData.prefix + '-' + this.currentLevel + '-' + this.currentImage;
+    return this.imagePrefix + '-' + this.currentLevel + '-' + this.currentImage;
 }
 
 Product.prototype.getCurrentHotspots = function() {
-    var hotspots = this.sequenceData.hotspotLocations[this.getCurrentImage()];
+    var hotspots = this.hotspotLocations[this.getCurrentImage()];
     var self = this;
     if (hotspots){
         hotspots.forEach(function(hotspot){
-            hotspot.hotspotData = self.sequenceData.hotspotDictionary[hotspot.hotspotName];
+            hotspot.hotspotData = self.hotspotDictionary[hotspot.hotspotName];
         });
         return hotspots;
     }else{
