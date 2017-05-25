@@ -1,27 +1,58 @@
-var MOVEMENT_CONTAINER_SELECTOR = "#sequence-container";
+var SEQUENCE_CONTAINER_ID = "#sequence-container";
+var IMAGE_LOCATION = "./images/";
+var IMAGE_EXTENSION = ".jpg";
 
-var Shield = function(sequenceJSON) {
-
-    var self = this;
+var Shield = function(parentContainerId, sequenceData) {
 
     this._trackRatio = {
         x: 30,
         y: 30
     };
 
-    this._productSequence = new Product(sequenceJSON);
+    $("#" + parentContainerId).append("<div id='sequence-container'></div>");
+
+    this._productSequence = new Product(sequenceData);
+
+    this.numberOfHorizontalImages = sequenceData.images;
+    this.numberOfVerticalImages = sequenceData.levels;
+    this.imagePrefix = sequenceData.prefix;
+    this.numberOfImagesToLoad = this.numberOfHorizontalImages * this.numberOfVerticalImages;
+    this.numberOfImagesLoaded = 0;
+    this.preload();
+}
+
+Shield.prototype.preload = function() {
+    for (var levelCount = 1; levelCount <= this.numberOfVerticalImages; levelCount++) {
+        for (var imageCount = 1; imageCount <= this.numberOfHorizontalImages; imageCount++) {
+            var image = new Image();
+            image.onload = this.imageLoadComplete.bind(this);
+            image.src = IMAGE_LOCATION + this.imagePrefix + '-' + levelCount + '-' + imageCount + IMAGE_EXTENSION;
+        }
+    }
+}
+
+Shield.prototype.imageLoadComplete = function() {
+    this.numberOfImagesLoaded++;
+    if (this.numberOfImagesToLoad == this.numberOfImagesLoaded) this.init();
+}
+
+Shield.prototype.init = function() {
+
+    for (var levelCount = 1; levelCount <= this.numberOfVerticalImages; levelCount++) {
+        for (var imageCount = 1; imageCount <= this.numberOfHorizontalImages; imageCount++) {
+            $(SEQUENCE_CONTAINER_ID).prepend('<img id="' + this.imagePrefix + '-' + levelCount + '-' + imageCount + '" class="sequence-image" src="' + IMAGE_LOCATION + this.imagePrefix + '-' + levelCount + '-' + imageCount + IMAGE_EXTENSION + '">');
+        }
+    }
+
     this.update();
 
-    //Window handlers
     $(window).on('resize', this.windowResized.bind(this));
     $(window).on('mouseup', this.stopTracking.bind(this));
     $(window).on('mousemove', this.mouseMoved.bind(this));
 
-    //Container handlers
-    $(MOVEMENT_CONTAINER_SELECTOR).on('mousedown', this.startTracking.bind(this));
-    $(MOVEMENT_CONTAINER_SELECTOR + ' img').on('dragstart', this.sequenceImageDragged.bind(this));
+    $(SEQUENCE_CONTAINER_ID).on('mousedown', this.startTracking.bind(this));
+    $(SEQUENCE_CONTAINER_ID + ' img').on('dragstart', this.sequenceImageDragged.bind(this));
 
-    //Do this after preload of each image
     this.resizeImages();
 }
 
@@ -53,7 +84,7 @@ Shield.prototype.mouseMoved = function(e) {
         $("#" + this._currentImage).hide();
         this._productSequence.move(yDiff, xDiff);
         this._trackStart = this.recordMousePosition(e);
-    
+
         this.update();
     }
 }
@@ -82,6 +113,7 @@ Shield.prototype.recordMousePosition = function(e) {
 }
 
 Shield.prototype.resizeImages = function() {
+
     //Determine the correct CSS attribute to maintain aspect ratio
     var sequenceContainerWidth = $("#sequence-container").width();
     var sequenceContainerHeight = $("#sequence-container").height();
