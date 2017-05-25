@@ -4,18 +4,13 @@ var Shield = function(sequenceJSON) {
 
     var self = this;
 
-    //productSequence, currentImage, _trackingMovement = false, trackStart;
     this._trackRatio = {
         x: 30,
         y: 30
     };
 
-    this._currentHotspots = [];
     this._productSequence = new Product(sequenceJSON);
-
-    //refactor this into update sequence - #######
-    this._currentImage = this._productSequence.getCurrentImage();
-    $("#" + this._currentImage).show();
+    this.update();
 
     //Window handlers
     $(window).on('resize', this.windowResized.bind(this));
@@ -26,8 +21,8 @@ var Shield = function(sequenceJSON) {
     $(MOVEMENT_CONTAINER_SELECTOR).on('mousedown', this.startTracking.bind(this));
     $(MOVEMENT_CONTAINER_SELECTOR + ' img').on('dragstart', this.sequenceImageDragged.bind(this));
 
+    //Do this after preload of each image
     this.resizeImages();
-    this.update();
 }
 
 Shield.prototype.sequenceImageDragged = function(event) {
@@ -57,11 +52,9 @@ Shield.prototype.mouseMoved = function(e) {
 
         $("#" + this._currentImage).hide();
         this._productSequence.move(yDiff, xDiff);
-        this._currentImage = this._productSequence.getCurrentImage();
-        $("#" + this._currentImage).show();
         this._trackStart = this.recordMousePosition(e);
-
-        this.displayCurrentHotspots();
+    
+        this.update();
     }
 }
 
@@ -76,6 +69,8 @@ Shield.prototype.displayCurrentHotspots = function() {
 }
 
 Shield.prototype.update = function() {
+    this._currentImage = this._productSequence.getCurrentImage();
+    $("#" + this._currentImage).show();
     this.displayCurrentHotspots();
 }
 

@@ -105,11 +105,3 @@ Product.errorLookup = function(errorCode) {
     };
     return errorCodes[errorCode];
 }
-
-/*
- *  The whole thing revolves around the user interacting with the screen and the Product class should not be the main driver of the application
- *  the Product is just something that manipulates which images should be shown or hidden and renders hotspots on top of it. 
- *
- *  Above the product should sit another class which is responsible for managing the touch and mouse events
- *
- */
