@@ -1,5 +1,5 @@
 #client-container{
-    width:300px;
+    width:50%;
     height:300px;
     border:2px solid black;
 }
@@ -23,7 +23,11 @@
     display:none;
     font: 16px/1 Arial sans-serif;
     cursor: pointer;
+
     pointer-events: none;
+}
+
+.nodrag{
     user-drag: none; 
     user-select: none;
     -moz-user-select: none;

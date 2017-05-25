@@ -10,7 +10,7 @@ var Shield = function(parentContainerId, sequenceData) {
     };
 
     $("#" + parentContainerId).append("<div id='sequence-container'></div>");
-    $(SEQUENCE_CONTAINER_ID).append('<div id="hotspot-container" class="noselect"></div> <div id="menu-container"> </div>');
+    $(SEQUENCE_CONTAINER_ID).append('<div id="hotspot-container" class="nodrag noselect"></div> <div id="menu-container"> </div>');
 
     this._productSequence = new Product(sequenceData);
 
