@@ -5,8 +5,8 @@ var IMAGE_EXTENSION = ".jpg";
 var Shield = function(parentContainerId, sequenceData) {
 
     this._trackRatio = {
-        x: 30,
-        y: 30
+        x: 20,
+        y: 20
     };
 
     $("#" + parentContainerId).append("<div id='sequence-container'></div>");
@@ -41,7 +41,7 @@ Shield.prototype.init = function() {
 
     for (var levelCount = 1; levelCount <= this.numberOfVerticalImages; levelCount++) {
         for (var imageCount = 1; imageCount <= this.numberOfHorizontalImages; imageCount++) {
-            $(SEQUENCE_CONTAINER_ID).prepend('<img id="' + this.imagePrefix + '-' + levelCount + '-' + imageCount + '" class="sequence-image noselect" src="' + IMAGE_LOCATION + this.imagePrefix + '-' + levelCount + '-' + imageCount + IMAGE_EXTENSION + '">');
+            $(SEQUENCE_CONTAINER_ID).prepend('<img id="' + this.imagePrefix + '-' + levelCount + '-' + imageCount + '" class="sequence-image noselect nodrag" src="' + IMAGE_LOCATION + this.imagePrefix + '-' + levelCount + '-' + imageCount + IMAGE_EXTENSION + '">');
         }
     }
 
@@ -78,17 +78,32 @@ Shield.prototype.stopTracking = function(e) {
 Shield.prototype.mouseMoved = function(e) {
 
     if (this._trackingMovement) {
+
+        //Stop the default drag movement on mobiles
         e.preventDefault();
-        if (this._trackStart == undefined) this._trackStart = this.recordMousePosition(e);
+
+        //Store the start position if we don't have one                
+        if (this._trackStartX == undefined) this._trackStartX = this.recordMousePosition(e);
+        if (this._trackStartY == undefined) this._trackStartY = this.recordMousePosition(e);
+
+        //Find the difference in positions 
         var currentPosition = this.recordMousePosition(e);
-        var xDiff = currentPosition.xPos - this._trackStart.xPos;
-        var yDiff = currentPosition.yPos - this._trackStart.yPos;
+        var xDiff = Math.floor((currentPosition.xPos - this._trackStartX.xPos) / this._trackRatio.x);
+        var yDiff = Math.floor((currentPosition.yPos - this._trackStartY.yPos) / this._trackRatio.y);
 
+        //Record new positions for X and Y if they trigger a new movement
+        if (Math.abs(xDiff)>=1) this._trackStartX = this.recordMousePosition(e);
+        if (Math.abs(yDiff)>=1) this._trackStartY = this.recordMousePosition(e);
+
+        //Hide the current image
         $("#" + this._currentImage).hide();
-        this._productSequence.move(yDiff, xDiff);
-        this._trackStart = this.recordMousePosition(e);
 
+        //Move the data model and update
+        this._productSequence.move(yDiff, xDiff);
         this.update();
+
+        //Record the new mouse position
+        //this._trackStart = this.recordMousePosition(e);
     }
 
 }

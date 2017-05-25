@@ -18,7 +18,7 @@ var Product = function(sequenceData) {
     this.hotspotLocations = sequenceData.hotspotLocations;
     this.hotspotDictionary = sequenceData.hotspotDictionary;
 
-    this.setThreshold(100);
+    this.setThreshold(1);
 }
 
 Product.prototype.preload = function() {}
